@@ -24,23 +24,23 @@ The following command should be used:
 python train.py
 ```
 
-## Benchmark 
+## Inference 
 
-For benchmar, use ```test.py``` file for start testing.
+For inference, use ```pred.py``` file to start testing.
 
 The following command should be used:
 
 ```
-python test.py
+python pred.py
 ```
 
 Note: you should fix model_path for your model path and directory to your benchmark dataset.
 
 ## Pretrained weights
 
-The weight will be update later.
+The weight will be updated later.
 
 ## Dataset
 
-You can use Kvasir-SEG dataset for training, or CVC-clinic DB for training.
+You can use the Kvasir-SEG dataset for training, or CVC-clinic DB for training.
 
