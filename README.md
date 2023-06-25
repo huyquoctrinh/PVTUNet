@@ -38,7 +38,7 @@ Note: you should fix model_path for your model path and directory to your benchm
 
 ## Pretrained weights
 
-The weight will be updated later.
+The weight for the PVTUNet will be in [Google Drive](https://drive.google.com/drive/folders/1vfzTBAsU28pNHuuYZ1L_zzok7sHi1Tn2?usp=sharing)
 
 ## Dataset
 
