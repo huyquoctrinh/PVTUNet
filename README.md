@@ -42,5 +42,22 @@ The weight for the PVTUNet will be in [Google Drive](https://drive.google.com/dr
 
 ## Dataset
 
-You can use the Kvasir-SEG dataset for training, or CVC-clinic DB for training.
+In our experiment, we use the dataset config from [PraNet](https://github.com/DengPingFan/PraNet), with training set from 50% of Kvasir-SEG and 50% of ClinicDB dataset. 
+
+With our test dataset, we use the following:
+
+In same distribution:
+
+- Kvasir SEG
+
+- ClinicDB 
+
+
+Out of distribution:
+
+- Etis dataset
+
+- ColonDB
+
+- CVC300
 
