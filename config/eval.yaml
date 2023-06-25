@@ -1,0 +1,16 @@
+Eval:
+    gt_root: "/root/tqhuy/torch_ver/dataset/TestDataset"
+    pred_root: "/root/tqhuy/src/save_vis/testcaunet/"
+    result_path: "results"
+    datasets: ['CVC-300', 'CVC-ClinicDB', 'Kvasir', 'CVC-ColonDB','ETIS-LaribPolypDB']
+    # 'ETIS-LaribPolypDB'
+    # datasets: ['Kvasir']
+    metrics: ['meanDic', 'meanIoU', 'wFm', 'Sm', 'meanEm', 'mae', 'maxEm', 'maxDic', 'maxIoU', 'meanSen', 'maxSen', 'meanSpe', 'maxSpe']
+
+# Eval:
+    # gt_root: "/root/tqhuy/TVMI3K/Test/"
+    # pred_root: "/root/tqhuy/src/save_vis/test_supervision/"
+    # result_path: "results"
+    # datasets: ['Test1']
+    # # datasets: ['Kvasir']
+    # metrics: ['meanDic', 'meanIoU', 'wFm', 'Sm', 'meanEm', 'mae', 'maxEm', 'maxDic', 'maxIoU', 'meanSen', 'maxSen', 'meanSpe', 'maxSpe']

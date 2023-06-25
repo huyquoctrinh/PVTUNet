@@ -1,0 +1,818 @@
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 352, 352, 3  0           []                               
+                                )]                                                                
+                                                                                                  
+ stem_pad (ZeroPadding2D)       (None, 358, 358, 3)  0           ['input_1[0][0]']                
+                                                                                                  
+ stem_conv (Conv2D)             (None, 88, 88, 32)   4736        ['stem_pad[0][0]']               
+                                                                                                  
+ stem_ln (LayerNormalization)   (None, 88, 88, 32)   64          ['stem_conv[0][0]']              
+                                                                                                  
+ stack1_block1_attn_ln (LayerNo  (None, 88, 88, 32)  64          ['stem_ln[0][0]']                
+ rmalization)                                                                                     
+                                                                                                  
+ stack1_block1_attn_kv_sr_conv   (None, 11, 11, 32)  65568       ['stack1_block1_attn_ln[0][0]']  
+ (Conv2D)                                                                                         
+                                                                                                  
+ stack1_block1_attn_kv_sr_ln (L  (None, 11, 11, 32)  64          ['stack1_block1_attn_kv_sr_conv[0
+ ayerNormalization)                                              ][0]']                           
+                                                                                                  
+ stack1_block1_attn_key_value (  (None, 11, 11, 64)  2112        ['stack1_block1_attn_kv_sr_ln[0][
+ Dense)                                                          0]']                             
+                                                                                                  
+ stack1_block1_attn_query (Dens  (None, 88, 88, 32)  1056        ['stack1_block1_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split (TFOpLambda)          [(None, 11, 11, 32)  0           ['stack1_block1_attn_key_value[0]
+                                , (None, 11, 11, 32              [0]']                            
+                                )]                                                                
+                                                                                                  
+ tf.reshape (TFOpLambda)        (None, 7744, 1, 32)  0           ['stack1_block1_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_1 (TFOpLambda)      (None, 121, 1, 32)   0           ['tf.split[0][0]']               
+                                                                                                  
+ tf.compat.v1.transpose (TFOpLa  (None, 1, 7744, 32)  0          ['tf.reshape[0][0]']             
+ mbda)                                                                                            
+                                                                                                  
+ tf.compat.v1.transpose_1 (TFOp  (None, 1, 32, 121)  0           ['tf.reshape_1[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ lambda (Lambda)                (None, 1, 7744, 121  0           ['tf.compat.v1.transpose[0][0]', 
+                                )                                 'tf.compat.v1.transpose_1[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.math.multiply (TFOpLambda)  (None, 1, 7744, 121  0           ['lambda[0][0]']                 
+                                )                                                                 
+                                                                                                  
+ tf.reshape_2 (TFOpLambda)      (None, 121, 1, 32)   0           ['tf.split[0][1]']               
+                                                                                                  
+ stack1_block1_attn_attention_s  (None, 1, 7744, 121  0          ['tf.math.multiply[0][0]']       
+ cores (Softmax)                )                                                                 
+                                                                                                  
+ tf.compat.v1.transpose_2 (TFOp  (None, 1, 121, 32)  0           ['tf.reshape_2[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ lambda_1 (Lambda)              (None, 1, 7744, 32)  0           ['stack1_block1_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_2[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.compat.v1.transpose_3 (TFOp  (None, 7744, 1, 32)  0          ['lambda_1[0][0]']               
+ Lambda)                                                                                          
+                                                                                                  
+ tf.reshape_3 (TFOpLambda)      (None, 88, 88, 32)   0           ['tf.compat.v1.transpose_3[0][0]'
+                                                                 ]                                
+                                                                                                  
+ stack1_block1_attn_out (Dense)  (None, 88, 88, 32)  1056        ['tf.reshape_3[0][0]']           
+                                                                                                  
+ stack1_block1_attn_output (Add  (None, 88, 88, 32)  0           ['stem_ln[0][0]',                
+ )                                                                'stack1_block1_attn_out[0][0]'] 
+                                                                                                  
+ stack1_block1_mlp_ln (LayerNor  (None, 88, 88, 32)  64          ['stack1_block1_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack1_block1_mlp_1_dense (Den  (None, 88, 88, 256)  8448       ['stack1_block1_mlp_ln[0][0]']   
+ se)                                                                                              
+                                                                                                  
+ stack1_block1_mlp_mid_dw_pad (  (None, 90, 90, 256)  0          ['stack1_block1_mlp_1_dense[0][0]
+ ZeroPadding2D)                                                  ']                               
+                                                                                                  
+ stack1_block1_mlp_mid_dw_conv   (None, 88, 88, 256)  2560       ['stack1_block1_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)                                               [0]']                            
+                                                                                                  
+ stack1_block1_mlp_mid_gelu (Ac  (None, 88, 88, 256)  0          ['stack1_block1_mlp_mid_dw_conv[0
+ tivation)                                                       ][0]']                           
+                                                                                                  
+ stack1_block1_mlp_2_dense (Den  (None, 88, 88, 32)  8224        ['stack1_block1_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack1_block1_mlp_output (Add)  (None, 88, 88, 32)  0           ['stack1_block1_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack1_block1_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack1_block2_attn_ln (LayerNo  (None, 88, 88, 32)  64          ['stack1_block1_mlp_output[0][0]'
+ rmalization)                                                    ]                                
+                                                                                                  
+ stack1_block2_attn_kv_sr_conv   (None, 11, 11, 32)  65568       ['stack1_block2_attn_ln[0][0]']  
+ (Conv2D)                                                                                         
+                                                                                                  
+ stack1_block2_attn_kv_sr_ln (L  (None, 11, 11, 32)  64          ['stack1_block2_attn_kv_sr_conv[0
+ ayerNormalization)                                              ][0]']                           
+                                                                                                  
+ stack1_block2_attn_key_value (  (None, 11, 11, 64)  2112        ['stack1_block2_attn_kv_sr_ln[0][
+ Dense)                                                          0]']                             
+                                                                                                  
+ stack1_block2_attn_query (Dens  (None, 88, 88, 32)  1056        ['stack1_block2_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_1 (TFOpLambda)        [(None, 11, 11, 32)  0           ['stack1_block2_attn_key_value[0]
+                                , (None, 11, 11, 32              [0]']                            
+                                )]                                                                
+                                                                                                  
+ tf.reshape_4 (TFOpLambda)      (None, 7744, 1, 32)  0           ['stack1_block2_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_5 (TFOpLambda)      (None, 121, 1, 32)   0           ['tf.split_1[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_4 (TFOp  (None, 1, 7744, 32)  0          ['tf.reshape_4[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ tf.compat.v1.transpose_5 (TFOp  (None, 1, 32, 121)  0           ['tf.reshape_5[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ lambda_2 (Lambda)              (None, 1, 7744, 121  0           ['tf.compat.v1.transpose_4[0][0]'
+                                )                                , 'tf.compat.v1.transpose_5[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_1 (TFOpLambda  (None, 1, 7744, 121  0          ['lambda_2[0][0]']               
+ )                              )                                                                 
+                                                                                                  
+ tf.reshape_6 (TFOpLambda)      (None, 121, 1, 32)   0           ['tf.split_1[0][1]']             
+                                                                                                  
+ stack1_block2_attn_attention_s  (None, 1, 7744, 121  0          ['tf.math.multiply_1[0][0]']     
+ cores (Softmax)                )                                                                 
+                                                                                                  
+ tf.compat.v1.transpose_6 (TFOp  (None, 1, 121, 32)  0           ['tf.reshape_6[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ lambda_3 (Lambda)              (None, 1, 7744, 32)  0           ['stack1_block2_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_6[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.compat.v1.transpose_7 (TFOp  (None, 7744, 1, 32)  0          ['lambda_3[0][0]']               
+ Lambda)                                                                                          
+                                                                                                  
+ tf.reshape_7 (TFOpLambda)      (None, 88, 88, 32)   0           ['tf.compat.v1.transpose_7[0][0]'
+                                                                 ]                                
+                                                                                                  
+ stack1_block2_attn_out (Dense)  (None, 88, 88, 32)  1056        ['tf.reshape_7[0][0]']           
+                                                                                                  
+ stack1_block2_attn_output (Add  (None, 88, 88, 32)  0           ['stack1_block1_mlp_output[0][0]'
+ )                                                               , 'stack1_block2_attn_out[0][0]']
+                                                                                                  
+ stack1_block2_mlp_ln (LayerNor  (None, 88, 88, 32)  64          ['stack1_block2_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack1_block2_mlp_1_dense (Den  (None, 88, 88, 256)  8448       ['stack1_block2_mlp_ln[0][0]']   
+ se)                                                                                              
+                                                                                                  
+ stack1_block2_mlp_mid_dw_pad (  (None, 90, 90, 256)  0          ['stack1_block2_mlp_1_dense[0][0]
+ ZeroPadding2D)                                                  ']                               
+                                                                                                  
+ stack1_block2_mlp_mid_dw_conv   (None, 88, 88, 256)  2560       ['stack1_block2_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)                                               [0]']                            
+                                                                                                  
+ stack1_block2_mlp_mid_gelu (Ac  (None, 88, 88, 256)  0          ['stack1_block2_mlp_mid_dw_conv[0
+ tivation)                                                       ][0]']                           
+                                                                                                  
+ stack1_block2_mlp_2_dense (Den  (None, 88, 88, 32)  8224        ['stack1_block2_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack1_block2_mlp_output (Add)  (None, 88, 88, 32)  0           ['stack1_block2_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack1_block2_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack1_block2_output_ln (Layer  (None, 88, 88, 32)  64          ['stack1_block2_mlp_output[0][0]'
+ Normalization)                                                  ]                                
+                                                                                                  
+ stack2_downsample_pad (ZeroPad  (None, 90, 90, 32)  0           ['stack1_block2_output_ln[0][0]']
+ ding2D)                                                                                          
+                                                                                                  
+ stack2_downsample_conv (Conv2D  (None, 44, 44, 64)  18496       ['stack2_downsample_pad[0][0]']  
+ )                                                                                                
+                                                                                                  
+ stack2_downsample_ln (LayerNor  (None, 44, 44, 64)  128         ['stack2_downsample_conv[0][0]'] 
+ malization)                                                                                      
+                                                                                                  
+ stack2_block1_attn_ln (LayerNo  (None, 44, 44, 64)  128         ['stack2_downsample_ln[0][0]']   
+ rmalization)                                                                                     
+                                                                                                  
+ stack2_block1_attn_kv_sr_conv   (None, 11, 11, 64)  65600       ['stack2_block1_attn_ln[0][0]']  
+ (Conv2D)                                                                                         
+                                                                                                  
+ stack2_block1_attn_kv_sr_ln (L  (None, 11, 11, 64)  128         ['stack2_block1_attn_kv_sr_conv[0
+ ayerNormalization)                                              ][0]']                           
+                                                                                                  
+ stack2_block1_attn_key_value (  (None, 11, 11, 128)  8320       ['stack2_block1_attn_kv_sr_ln[0][
+ Dense)                                                          0]']                             
+                                                                                                  
+ stack2_block1_attn_query (Dens  (None, 44, 44, 64)  4160        ['stack2_block1_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_2 (TFOpLambda)        [(None, 11, 11, 64)  0           ['stack2_block1_attn_key_value[0]
+                                , (None, 11, 11, 64              [0]']                            
+                                )]                                                                
+                                                                                                  
+ tf.reshape_8 (TFOpLambda)      (None, 1936, 2, 32)  0           ['stack2_block1_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_9 (TFOpLambda)      (None, 121, 2, 32)   0           ['tf.split_2[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_8 (TFOp  (None, 2, 1936, 32)  0          ['tf.reshape_8[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ tf.compat.v1.transpose_9 (TFOp  (None, 2, 32, 121)  0           ['tf.reshape_9[0][0]']           
+ Lambda)                                                                                          
+                                                                                                  
+ lambda_4 (Lambda)              (None, 2, 1936, 121  0           ['tf.compat.v1.transpose_8[0][0]'
+                                )                                , 'tf.compat.v1.transpose_9[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_2 (TFOpLambda  (None, 2, 1936, 121  0          ['lambda_4[0][0]']               
+ )                              )                                                                 
+                                                                                                  
+ tf.reshape_10 (TFOpLambda)     (None, 121, 2, 32)   0           ['tf.split_2[0][1]']             
+                                                                                                  
+ stack2_block1_attn_attention_s  (None, 2, 1936, 121  0          ['tf.math.multiply_2[0][0]']     
+ cores (Softmax)                )                                                                 
+                                                                                                  
+ tf.compat.v1.transpose_10 (TFO  (None, 2, 121, 32)  0           ['tf.reshape_10[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_5 (Lambda)              (None, 2, 1936, 32)  0           ['stack2_block1_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_10[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.compat.v1.transpose_11 (TFO  (None, 1936, 2, 32)  0          ['lambda_5[0][0]']               
+ pLambda)                                                                                         
+                                                                                                  
+ tf.reshape_11 (TFOpLambda)     (None, 44, 44, 64)   0           ['tf.compat.v1.transpose_11[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack2_block1_attn_out (Dense)  (None, 44, 44, 64)  4160        ['tf.reshape_11[0][0]']          
+                                                                                                  
+ stack2_block1_attn_output (Add  (None, 44, 44, 64)  0           ['stack2_downsample_ln[0][0]',   
+ )                                                                'stack2_block1_attn_out[0][0]'] 
+                                                                                                  
+ stack2_block1_mlp_ln (LayerNor  (None, 44, 44, 64)  128         ['stack2_block1_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack2_block1_mlp_1_dense (Den  (None, 44, 44, 512)  33280      ['stack2_block1_mlp_ln[0][0]']   
+ se)                                                                                              
+                                                                                                  
+ stack2_block1_mlp_mid_dw_pad (  (None, 46, 46, 512)  0          ['stack2_block1_mlp_1_dense[0][0]
+ ZeroPadding2D)                                                  ']                               
+                                                                                                  
+ stack2_block1_mlp_mid_dw_conv   (None, 44, 44, 512)  5120       ['stack2_block1_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)                                               [0]']                            
+                                                                                                  
+ stack2_block1_mlp_mid_gelu (Ac  (None, 44, 44, 512)  0          ['stack2_block1_mlp_mid_dw_conv[0
+ tivation)                                                       ][0]']                           
+                                                                                                  
+ stack2_block1_mlp_2_dense (Den  (None, 44, 44, 64)  32832       ['stack2_block1_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack2_block1_mlp_output (Add)  (None, 44, 44, 64)  0           ['stack2_block1_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack2_block1_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack2_block2_attn_ln (LayerNo  (None, 44, 44, 64)  128         ['stack2_block1_mlp_output[0][0]'
+ rmalization)                                                    ]                                
+                                                                                                  
+ stack2_block2_attn_kv_sr_conv   (None, 11, 11, 64)  65600       ['stack2_block2_attn_ln[0][0]']  
+ (Conv2D)                                                                                         
+                                                                                                  
+ stack2_block2_attn_kv_sr_ln (L  (None, 11, 11, 64)  128         ['stack2_block2_attn_kv_sr_conv[0
+ ayerNormalization)                                              ][0]']                           
+                                                                                                  
+ stack2_block2_attn_key_value (  (None, 11, 11, 128)  8320       ['stack2_block2_attn_kv_sr_ln[0][
+ Dense)                                                          0]']                             
+                                                                                                  
+ stack2_block2_attn_query (Dens  (None, 44, 44, 64)  4160        ['stack2_block2_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_3 (TFOpLambda)        [(None, 11, 11, 64)  0           ['stack2_block2_attn_key_value[0]
+                                , (None, 11, 11, 64              [0]']                            
+                                )]                                                                
+                                                                                                  
+ tf.reshape_12 (TFOpLambda)     (None, 1936, 2, 32)  0           ['stack2_block2_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_13 (TFOpLambda)     (None, 121, 2, 32)   0           ['tf.split_3[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_12 (TFO  (None, 2, 1936, 32)  0          ['tf.reshape_12[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ tf.compat.v1.transpose_13 (TFO  (None, 2, 32, 121)  0           ['tf.reshape_13[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_6 (Lambda)              (None, 2, 1936, 121  0           ['tf.compat.v1.transpose_12[0][0]
+                                )                                ',                               
+                                                                  'tf.compat.v1.transpose_13[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_3 (TFOpLambda  (None, 2, 1936, 121  0          ['lambda_6[0][0]']               
+ )                              )                                                                 
+                                                                                                  
+ tf.reshape_14 (TFOpLambda)     (None, 121, 2, 32)   0           ['tf.split_3[0][1]']             
+                                                                                                  
+ stack2_block2_attn_attention_s  (None, 2, 1936, 121  0          ['tf.math.multiply_3[0][0]']     
+ cores (Softmax)                )                                                                 
+                                                                                                  
+ tf.compat.v1.transpose_14 (TFO  (None, 2, 121, 32)  0           ['tf.reshape_14[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_7 (Lambda)              (None, 2, 1936, 32)  0           ['stack2_block2_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_14[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.compat.v1.transpose_15 (TFO  (None, 1936, 2, 32)  0          ['lambda_7[0][0]']               
+ pLambda)                                                                                         
+                                                                                                  
+ tf.reshape_15 (TFOpLambda)     (None, 44, 44, 64)   0           ['tf.compat.v1.transpose_15[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack2_block2_attn_out (Dense)  (None, 44, 44, 64)  4160        ['tf.reshape_15[0][0]']          
+                                                                                                  
+ stack2_block2_attn_output (Add  (None, 44, 44, 64)  0           ['stack2_block1_mlp_output[0][0]'
+ )                                                               , 'stack2_block2_attn_out[0][0]']
+                                                                                                  
+ stack2_block2_mlp_ln (LayerNor  (None, 44, 44, 64)  128         ['stack2_block2_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack2_block2_mlp_1_dense (Den  (None, 44, 44, 512)  33280      ['stack2_block2_mlp_ln[0][0]']   
+ se)                                                                                              
+                                                                                                  
+ stack2_block2_mlp_mid_dw_pad (  (None, 46, 46, 512)  0          ['stack2_block2_mlp_1_dense[0][0]
+ ZeroPadding2D)                                                  ']                               
+                                                                                                  
+ stack2_block2_mlp_mid_dw_conv   (None, 44, 44, 512)  5120       ['stack2_block2_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)                                               [0]']                            
+                                                                                                  
+ stack2_block2_mlp_mid_gelu (Ac  (None, 44, 44, 512)  0          ['stack2_block2_mlp_mid_dw_conv[0
+ tivation)                                                       ][0]']                           
+                                                                                                  
+ stack2_block2_mlp_2_dense (Den  (None, 44, 44, 64)  32832       ['stack2_block2_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack2_block2_mlp_output (Add)  (None, 44, 44, 64)  0           ['stack2_block2_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack2_block2_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack2_block2_output_ln (Layer  (None, 44, 44, 64)  128         ['stack2_block2_mlp_output[0][0]'
+ Normalization)                                                  ]                                
+                                                                                                  
+ stack3_downsample_pad (ZeroPad  (None, 46, 46, 64)  0           ['stack2_block2_output_ln[0][0]']
+ ding2D)                                                                                          
+                                                                                                  
+ stack3_downsample_conv (Conv2D  (None, 22, 22, 160)  92320      ['stack3_downsample_pad[0][0]']  
+ )                                                                                                
+                                                                                                  
+ stack3_downsample_ln (LayerNor  (None, 22, 22, 160)  320        ['stack3_downsample_conv[0][0]'] 
+ malization)                                                                                      
+                                                                                                  
+ stack3_block1_attn_ln (LayerNo  (None, 22, 22, 160)  320        ['stack3_downsample_ln[0][0]']   
+ rmalization)                                                                                     
+                                                                                                  
+ stack3_block1_attn_kv_sr_conv   (None, 11, 11, 160)  102560     ['stack3_block1_attn_ln[0][0]']  
+ (Conv2D)                                                                                         
+                                                                                                  
+ stack3_block1_attn_kv_sr_ln (L  (None, 11, 11, 160)  320        ['stack3_block1_attn_kv_sr_conv[0
+ ayerNormalization)                                              ][0]']                           
+                                                                                                  
+ stack3_block1_attn_key_value (  (None, 11, 11, 320)  51520      ['stack3_block1_attn_kv_sr_ln[0][
+ Dense)                                                          0]']                             
+                                                                                                  
+ stack3_block1_attn_query (Dens  (None, 22, 22, 160)  25760      ['stack3_block1_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_4 (TFOpLambda)        [(None, 11, 11, 160  0           ['stack3_block1_attn_key_value[0]
+                                ),                               [0]']                            
+                                 (None, 11, 11, 160                                               
+                                )]                                                                
+                                                                                                  
+ tf.reshape_16 (TFOpLambda)     (None, 484, 5, 32)   0           ['stack3_block1_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_17 (TFOpLambda)     (None, 121, 5, 32)   0           ['tf.split_4[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_16 (TFO  (None, 5, 484, 32)  0           ['tf.reshape_16[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ tf.compat.v1.transpose_17 (TFO  (None, 5, 32, 121)  0           ['tf.reshape_17[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_8 (Lambda)              (None, 5, 484, 121)  0           ['tf.compat.v1.transpose_16[0][0]
+                                                                 ',                               
+                                                                  'tf.compat.v1.transpose_17[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_4 (TFOpLambda  (None, 5, 484, 121)  0          ['lambda_8[0][0]']               
+ )                                                                                                
+                                                                                                  
+ tf.reshape_18 (TFOpLambda)     (None, 121, 5, 32)   0           ['tf.split_4[0][1]']             
+                                                                                                  
+ stack3_block1_attn_attention_s  (None, 5, 484, 121)  0          ['tf.math.multiply_4[0][0]']     
+ cores (Softmax)                                                                                  
+                                                                                                  
+ tf.compat.v1.transpose_18 (TFO  (None, 5, 121, 32)  0           ['tf.reshape_18[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_9 (Lambda)              (None, 5, 484, 32)   0           ['stack3_block1_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_18[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.compat.v1.transpose_19 (TFO  (None, 484, 5, 32)  0           ['lambda_9[0][0]']               
+ pLambda)                                                                                         
+                                                                                                  
+ tf.reshape_19 (TFOpLambda)     (None, 22, 22, 160)  0           ['tf.compat.v1.transpose_19[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack3_block1_attn_out (Dense)  (None, 22, 22, 160)  25760      ['tf.reshape_19[0][0]']          
+                                                                                                  
+ stack3_block1_attn_output (Add  (None, 22, 22, 160)  0          ['stack3_downsample_ln[0][0]',   
+ )                                                                'stack3_block1_attn_out[0][0]'] 
+                                                                                                  
+ stack3_block1_mlp_ln (LayerNor  (None, 22, 22, 160)  320        ['stack3_block1_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack3_block1_mlp_1_dense (Den  (None, 22, 22, 640)  103040     ['stack3_block1_mlp_ln[0][0]']   
+ se)                                                                                              
+                                                                                                  
+ stack3_block1_mlp_mid_dw_pad (  (None, 24, 24, 640)  0          ['stack3_block1_mlp_1_dense[0][0]
+ ZeroPadding2D)                                                  ']                               
+                                                                                                  
+ stack3_block1_mlp_mid_dw_conv   (None, 22, 22, 640)  6400       ['stack3_block1_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)                                               [0]']                            
+                                                                                                  
+ stack3_block1_mlp_mid_gelu (Ac  (None, 22, 22, 640)  0          ['stack3_block1_mlp_mid_dw_conv[0
+ tivation)                                                       ][0]']                           
+                                                                                                  
+ stack3_block1_mlp_2_dense (Den  (None, 22, 22, 160)  102560     ['stack3_block1_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack3_block1_mlp_output (Add)  (None, 22, 22, 160)  0          ['stack3_block1_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack3_block1_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack3_block2_attn_ln (LayerNo  (None, 22, 22, 160)  320        ['stack3_block1_mlp_output[0][0]'
+ rmalization)                                                    ]                                
+                                                                                                  
+ stack3_block2_attn_kv_sr_conv   (None, 11, 11, 160)  102560     ['stack3_block2_attn_ln[0][0]']  
+ (Conv2D)                                                                                         
+                                                                                                  
+ stack3_block2_attn_kv_sr_ln (L  (None, 11, 11, 160)  320        ['stack3_block2_attn_kv_sr_conv[0
+ ayerNormalization)                                              ][0]']                           
+                                                                                                  
+ stack3_block2_attn_key_value (  (None, 11, 11, 320)  51520      ['stack3_block2_attn_kv_sr_ln[0][
+ Dense)                                                          0]']                             
+                                                                                                  
+ stack3_block2_attn_query (Dens  (None, 22, 22, 160)  25760      ['stack3_block2_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_5 (TFOpLambda)        [(None, 11, 11, 160  0           ['stack3_block2_attn_key_value[0]
+                                ),                               [0]']                            
+                                 (None, 11, 11, 160                                               
+                                )]                                                                
+                                                                                                  
+ tf.reshape_20 (TFOpLambda)     (None, 484, 5, 32)   0           ['stack3_block2_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_21 (TFOpLambda)     (None, 121, 5, 32)   0           ['tf.split_5[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_20 (TFO  (None, 5, 484, 32)  0           ['tf.reshape_20[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ tf.compat.v1.transpose_21 (TFO  (None, 5, 32, 121)  0           ['tf.reshape_21[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_10 (Lambda)             (None, 5, 484, 121)  0           ['tf.compat.v1.transpose_20[0][0]
+                                                                 ',                               
+                                                                  'tf.compat.v1.transpose_21[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_5 (TFOpLambda  (None, 5, 484, 121)  0          ['lambda_10[0][0]']              
+ )                                                                                                
+                                                                                                  
+ tf.reshape_22 (TFOpLambda)     (None, 121, 5, 32)   0           ['tf.split_5[0][1]']             
+                                                                                                  
+ stack3_block2_attn_attention_s  (None, 5, 484, 121)  0          ['tf.math.multiply_5[0][0]']     
+ cores (Softmax)                                                                                  
+                                                                                                  
+ tf.compat.v1.transpose_22 (TFO  (None, 5, 121, 32)  0           ['tf.reshape_22[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_11 (Lambda)             (None, 5, 484, 32)   0           ['stack3_block2_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_22[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.compat.v1.transpose_23 (TFO  (None, 484, 5, 32)  0           ['lambda_11[0][0]']              
+ pLambda)                                                                                         
+                                                                                                  
+ tf.reshape_23 (TFOpLambda)     (None, 22, 22, 160)  0           ['tf.compat.v1.transpose_23[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack3_block2_attn_out (Dense)  (None, 22, 22, 160)  25760      ['tf.reshape_23[0][0]']          
+                                                                                                  
+ stack3_block2_attn_output (Add  (None, 22, 22, 160)  0          ['stack3_block1_mlp_output[0][0]'
+ )                                                               , 'stack3_block2_attn_out[0][0]']
+                                                                                                  
+ stack3_block2_mlp_ln (LayerNor  (None, 22, 22, 160)  320        ['stack3_block2_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack3_block2_mlp_1_dense (Den  (None, 22, 22, 640)  103040     ['stack3_block2_mlp_ln[0][0]']   
+ se)                                                                                              
+                                                                                                  
+ stack3_block2_mlp_mid_dw_pad (  (None, 24, 24, 640)  0          ['stack3_block2_mlp_1_dense[0][0]
+ ZeroPadding2D)                                                  ']                               
+                                                                                                  
+ stack3_block2_mlp_mid_dw_conv   (None, 22, 22, 640)  6400       ['stack3_block2_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)                                               [0]']                            
+                                                                                                  
+ stack3_block2_mlp_mid_gelu (Ac  (None, 22, 22, 640)  0          ['stack3_block2_mlp_mid_dw_conv[0
+ tivation)                                                       ][0]']                           
+                                                                                                  
+ stack3_block2_mlp_2_dense (Den  (None, 22, 22, 160)  102560     ['stack3_block2_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack3_block2_mlp_output (Add)  (None, 22, 22, 160)  0          ['stack3_block2_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack3_block2_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack3_block2_output_ln (Layer  (None, 22, 22, 160)  320        ['stack3_block2_mlp_output[0][0]'
+ Normalization)                                                  ]                                
+                                                                                                  
+ stack4_downsample_pad (ZeroPad  (None, 24, 24, 160)  0          ['stack3_block2_output_ln[0][0]']
+ ding2D)                                                                                          
+                                                                                                  
+ stack4_downsample_conv (Conv2D  (None, 11, 11, 256)  368896     ['stack4_downsample_pad[0][0]']  
+ )                                                                                                
+                                                                                                  
+ stack4_downsample_ln (LayerNor  (None, 11, 11, 256)  512        ['stack4_downsample_conv[0][0]'] 
+ malization)                                                                                      
+                                                                                                  
+ stack4_block1_attn_ln (LayerNo  (None, 11, 11, 256)  512        ['stack4_downsample_ln[0][0]']   
+ rmalization)                                                                                     
+                                                                                                  
+ stack4_block1_attn_key_value (  (None, 11, 11, 512)  131584     ['stack4_block1_attn_ln[0][0]']  
+ Dense)                                                                                           
+                                                                                                  
+ stack4_block1_attn_query (Dens  (None, 11, 11, 256)  65792      ['stack4_block1_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_6 (TFOpLambda)        [(None, 11, 11, 256  0           ['stack4_block1_attn_key_value[0]
+                                ),                               [0]']                            
+                                 (None, 11, 11, 256                                               
+                                )]                                                                
+                                                                                                  
+ tf.reshape_24 (TFOpLambda)     (None, 121, 8, 32)   0           ['stack4_block1_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_25 (TFOpLambda)     (None, 121, 8, 32)   0           ['tf.split_6[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_24 (TFO  (None, 8, 121, 32)  0           ['tf.reshape_24[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ tf.compat.v1.transpose_25 (TFO  (None, 8, 32, 121)  0           ['tf.reshape_25[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_12 (Lambda)             (None, 8, 121, 121)  0           ['tf.compat.v1.transpose_24[0][0]
+                                                                 ',                               
+                                                                  'tf.compat.v1.transpose_25[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_6 (TFOpLambda  (None, 8, 121, 121)  0          ['lambda_12[0][0]']              
+ )                                                                                                
+                                                                                                  
+ tf.reshape_26 (TFOpLambda)     (None, 121, 8, 32)   0           ['tf.split_6[0][1]']             
+                                                                                                  
+ stack4_block1_attn_attention_s  (None, 8, 121, 121)  0          ['tf.math.multiply_6[0][0]']     
+ cores (Softmax)                                                                                  
+                                                                                                  
+ tf.compat.v1.transpose_26 (TFO  (None, 8, 121, 32)  0           ['tf.reshape_26[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_13 (Lambda)             (None, 8, 121, 32)   0           ['stack4_block1_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_26[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.compat.v1.transpose_27 (TFO  (None, 121, 8, 32)  0           ['lambda_13[0][0]']              
+ pLambda)                                                                                         
+                                                                                                  
+ tf.reshape_27 (TFOpLambda)     (None, 11, 11, 256)  0           ['tf.compat.v1.transpose_27[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack4_block1_attn_out (Dense)  (None, 11, 11, 256)  65792      ['tf.reshape_27[0][0]']          
+                                                                                                  
+ stack4_block1_attn_output (Add  (None, 11, 11, 256)  0          ['stack4_downsample_ln[0][0]',   
+ )                                                                'stack4_block1_attn_out[0][0]'] 
+                                                                                                  
+ stack4_block1_mlp_ln (LayerNor  (None, 11, 11, 256)  512        ['stack4_block1_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack4_block1_mlp_1_dense (Den  (None, 11, 11, 1024  263168     ['stack4_block1_mlp_ln[0][0]']   
+ se)                            )                                                                 
+                                                                                                  
+ stack4_block1_mlp_mid_dw_pad (  (None, 13, 13, 1024  0          ['stack4_block1_mlp_1_dense[0][0]
+ ZeroPadding2D)                 )                                ']                               
+                                                                                                  
+ stack4_block1_mlp_mid_dw_conv   (None, 11, 11, 1024  10240      ['stack4_block1_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)              )                                [0]']                            
+                                                                                                  
+ stack4_block1_mlp_mid_gelu (Ac  (None, 11, 11, 1024  0          ['stack4_block1_mlp_mid_dw_conv[0
+ tivation)                      )                                ][0]']                           
+                                                                                                  
+ stack4_block1_mlp_2_dense (Den  (None, 11, 11, 256)  262400     ['stack4_block1_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack4_block1_mlp_output (Add)  (None, 11, 11, 256)  0          ['stack4_block1_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack4_block1_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack4_block2_attn_ln (LayerNo  (None, 11, 11, 256)  512        ['stack4_block1_mlp_output[0][0]'
+ rmalization)                                                    ]                                
+                                                                                                  
+ stack4_block2_attn_key_value (  (None, 11, 11, 512)  131584     ['stack4_block2_attn_ln[0][0]']  
+ Dense)                                                                                           
+                                                                                                  
+ stack4_block2_attn_query (Dens  (None, 11, 11, 256)  65792      ['stack4_block2_attn_ln[0][0]']  
+ e)                                                                                               
+                                                                                                  
+ tf.split_7 (TFOpLambda)        [(None, 11, 11, 256  0           ['stack4_block2_attn_key_value[0]
+                                ),                               [0]']                            
+                                 (None, 11, 11, 256                                               
+                                )]                                                                
+                                                                                                  
+ tf.reshape_28 (TFOpLambda)     (None, 121, 8, 32)   0           ['stack4_block2_attn_query[0][0]'
+                                                                 ]                                
+                                                                                                  
+ tf.reshape_29 (TFOpLambda)     (None, 121, 8, 32)   0           ['tf.split_7[0][0]']             
+                                                                                                  
+ tf.compat.v1.transpose_28 (TFO  (None, 8, 121, 32)  0           ['tf.reshape_28[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ tf.compat.v1.transpose_29 (TFO  (None, 8, 32, 121)  0           ['tf.reshape_29[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_14 (Lambda)             (None, 8, 121, 121)  0           ['tf.compat.v1.transpose_28[0][0]
+                                                                 ',                               
+                                                                  'tf.compat.v1.transpose_29[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.math.multiply_7 (TFOpLambda  (None, 8, 121, 121)  0          ['lambda_14[0][0]']              
+ )                                                                                                
+                                                                                                  
+ tf.reshape_30 (TFOpLambda)     (None, 121, 8, 32)   0           ['tf.split_7[0][1]']             
+                                                                                                  
+ stack4_block2_attn_attention_s  (None, 8, 121, 121)  0          ['tf.math.multiply_7[0][0]']     
+ cores (Softmax)                                                                                  
+                                                                                                  
+ tf.compat.v1.transpose_30 (TFO  (None, 8, 121, 32)  0           ['tf.reshape_30[0][0]']          
+ pLambda)                                                                                         
+                                                                                                  
+ lambda_15 (Lambda)             (None, 8, 121, 32)   0           ['stack4_block2_attn_attention_sc
+                                                                 ores[0][0]',                     
+                                                                  'tf.compat.v1.transpose_30[0][0]
+                                                                 ']                               
+                                                                                                  
+ tf.compat.v1.transpose_31 (TFO  (None, 121, 8, 32)  0           ['lambda_15[0][0]']              
+ pLambda)                                                                                         
+                                                                                                  
+ tf.reshape_31 (TFOpLambda)     (None, 11, 11, 256)  0           ['tf.compat.v1.transpose_31[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack4_block2_attn_out (Dense)  (None, 11, 11, 256)  65792      ['tf.reshape_31[0][0]']          
+                                                                                                  
+ stack4_block2_attn_output (Add  (None, 11, 11, 256)  0          ['stack4_block1_mlp_output[0][0]'
+ )                                                               , 'stack4_block2_attn_out[0][0]']
+                                                                                                  
+ stack4_block2_mlp_ln (LayerNor  (None, 11, 11, 256)  512        ['stack4_block2_attn_output[0][0]
+ malization)                                                     ']                               
+                                                                                                  
+ stack4_block2_mlp_1_dense (Den  (None, 11, 11, 1024  263168     ['stack4_block2_mlp_ln[0][0]']   
+ se)                            )                                                                 
+                                                                                                  
+ stack4_block2_mlp_mid_dw_pad (  (None, 13, 13, 1024  0          ['stack4_block2_mlp_1_dense[0][0]
+ ZeroPadding2D)                 )                                ']                               
+                                                                                                  
+ stack4_block2_mlp_mid_dw_conv   (None, 11, 11, 1024  10240      ['stack4_block2_mlp_mid_dw_pad[0]
+ (DepthwiseConv2D)              )                                [0]']                            
+                                                                                                  
+ stack4_block2_mlp_mid_gelu (Ac  (None, 11, 11, 1024  0          ['stack4_block2_mlp_mid_dw_conv[0
+ tivation)                      )                                ][0]']                           
+                                                                                                  
+ stack4_block2_mlp_2_dense (Den  (None, 11, 11, 256)  262400     ['stack4_block2_mlp_mid_gelu[0][0
+ se)                                                             ]']                              
+                                                                                                  
+ stack4_block2_mlp_output (Add)  (None, 11, 11, 256)  0          ['stack4_block2_attn_output[0][0]
+                                                                 ',                               
+                                                                  'stack4_block2_mlp_2_dense[0][0]
+                                                                 ']                               
+                                                                                                  
+ stack4_block2_output_ln (Layer  (None, 11, 11, 256)  512        ['stack4_block2_mlp_output[0][0]'
+ Normalization)                                                  ]                                
+                                                                                                  
+ conv2d_transpose (Conv2DTransp  (None, 22, 22, 160)  655520     ['stack4_block2_output_ln[0][0]']
+ ose)                                                                                             
+                                                                                                  
+ batch_normalization (BatchNorm  (None, 22, 22, 160)  640        ['conv2d_transpose[0][0]']       
+ alization)                                                                                       
+                                                                                                  
+ activation (Activation)        (None, 22, 22, 160)  0           ['batch_normalization[0][0]']    
+                                                                                                  
+ add (Add)                      (None, 22, 22, 160)  0           ['activation[0][0]',             
+                                                                  'stack3_block2_output_ln[0][0]']
+                                                                                                  
+ conv2d (Conv2D)                (None, 22, 22, 160)  230560      ['add[0][0]']                    
+                                                                                                  
+ batch_normalization_1 (BatchNo  (None, 22, 22, 160)  640        ['conv2d[0][0]']                 
+ rmalization)                                                                                     
+                                                                                                  
+ activation_1 (Activation)      (None, 22, 22, 160)  0           ['batch_normalization_1[0][0]']  
+                                                                                                  
+ conv2d_transpose_1 (Conv2DTran  (None, 44, 44, 64)  163904      ['activation_1[0][0]']           
+ spose)                                                                                           
+                                                                                                  
+ batch_normalization_2 (BatchNo  (None, 44, 44, 64)  256         ['conv2d_transpose_1[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ activation_2 (Activation)      (None, 44, 44, 64)   0           ['batch_normalization_2[0][0]']  
+                                                                                                  
+ add_1 (Add)                    (None, 44, 44, 64)   0           ['activation_2[0][0]',           
+                                                                  'stack2_block2_output_ln[0][0]']
+                                                                                                  
+ conv2d_1 (Conv2D)              (None, 44, 44, 64)   36928       ['add_1[0][0]']                  
+                                                                                                  
+ batch_normalization_3 (BatchNo  (None, 44, 44, 64)  256         ['conv2d_1[0][0]']               
+ rmalization)                                                                                     
+                                                                                                  
+ activation_3 (Activation)      (None, 44, 44, 64)   0           ['batch_normalization_3[0][0]']  
+                                                                                                  
+ conv2d_transpose_2 (Conv2DTran  (None, 88, 88, 32)  32800       ['activation_3[0][0]']           
+ spose)                                                                                           
+                                                                                                  
+ batch_normalization_4 (BatchNo  (None, 88, 88, 32)  128         ['conv2d_transpose_2[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ activation_4 (Activation)      (None, 88, 88, 32)   0           ['batch_normalization_4[0][0]']  
+                                                                                                  
+ add_2 (Add)                    (None, 88, 88, 32)   0           ['activation_4[0][0]',           
+                                                                  'stack1_block1_attn_ln[0][0]']  
+                                                                                                  
+ conv2d_2 (Conv2D)              (None, 88, 88, 32)   9248        ['add_2[0][0]']                  
+                                                                                                  
+ batch_normalization_5 (BatchNo  (None, 88, 88, 32)  128         ['conv2d_2[0][0]']               
+ rmalization)                                                                                     
+                                                                                                  
+ activation_5 (Activation)      (None, 88, 88, 32)   0           ['batch_normalization_5[0][0]']  
+                                                                                                  
+ conv2d_transpose_3 (Conv2DTran  (None, 176, 176, 32  16416      ['activation_5[0][0]']           
+ spose)                         )                                                                 
+                                                                                                  
+ batch_normalization_6 (BatchNo  (None, 176, 176, 32  128        ['conv2d_transpose_3[0][0]']     
+ rmalization)                   )                                                                 
+                                                                                                  
+ activation_6 (Activation)      (None, 176, 176, 32  0           ['batch_normalization_6[0][0]']  
+                                )                                                                 
+                                                                                                  
+ conv2d_3 (Conv2D)              (None, 176, 176, 32  9248        ['activation_6[0][0]']           
+                                )                                                                 
+                                                                                                  
+ batch_normalization_7 (BatchNo  (None, 176, 176, 32  128        ['conv2d_3[0][0]']               
+ rmalization)                   )                                                                 
+                                                                                                  
+ activation_7 (Activation)      (None, 176, 176, 32  0           ['batch_normalization_7[0][0]']  
+                                )                                                                 
+                                                                                                  
+ conv2d_transpose_4 (Conv2DTran  (None, 352, 352, 32  16416      ['activation_7[0][0]']           
+ spose)                         )                                                                 
+                                                                                                  
+ batch_normalization_8 (BatchNo  (None, 352, 352, 32  128        ['conv2d_transpose_4[0][0]']     
+ rmalization)                   )                                                                 
+                                                                                                  
+ activation_8 (Activation)      (None, 352, 352, 32  0           ['batch_normalization_8[0][0]']  
+                                )                                                                 
+                                                                                                  
+ conv2d_4 (Conv2D)              (None, 352, 352, 32  9248        ['activation_8[0][0]']           
+                                )                                                                 
+                                                                                                  
+ batch_normalization_9 (BatchNo  (None, 352, 352, 32  128        ['conv2d_4[0][0]']               
+ rmalization)                   )                                                                 
+                                                                                                  
+ activation_9 (Activation)      (None, 352, 352, 32  0           ['batch_normalization_9[0][0]']  
+                                )                                                                 
+                                                                                                  
+ mask_out_4 (Conv2D)            (None, 352, 352, 1)  33          ['activation_9[0][0]']           
+                                                                                                  
+==================================================================================================
+Total params: 4,592,641
+Trainable params: 4,591,361
+Non-trainable params: 1,280
+__________________________________________________________________________________________________
